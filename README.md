@@ -25,4 +25,4 @@ https://docs.google.com/spreadsheet/ccc?key=0AkYNnR0IM6SpdEJPcWRpUGNKYzRCUExnamJ
 =======
 - http://developer.android.com/training/basics/network-ops/xml.html
 - http://developer.android.com/training/basics/network-ops/connecting.html
-- http://developer.android.com/reference/android/widget/ListView.html
+- http://developer.android.com/guide/topics/ui/declaring-layout.html#AdapterViews
