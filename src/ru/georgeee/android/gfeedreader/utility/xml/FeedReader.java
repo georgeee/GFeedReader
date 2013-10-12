@@ -3,6 +3,7 @@ package ru.georgeee.android.gfeedreader.utility.xml;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
+import ru.georgeee.android.gfeedreader.utility.http.HttpUtility;
 import ru.georgeee.android.gfeedreader.utility.model.Entry;
 import ru.georgeee.android.gfeedreader.utility.model.Feed;
 
@@ -28,38 +29,6 @@ public class FeedReader extends DefaultHandler implements SAXHandler<Feed> {
     protected Entry entry = null;
     ArrayList<TagHandler> tagStack;
     ArrayList<StringBuilder> buffers;
-
-    public static final SimpleDateFormat rfc822DateFormats[] = new SimpleDateFormat[] {
-            new SimpleDateFormat("EEE, d MMM yy HH:mm:ss z"),
-            new SimpleDateFormat("EEE, d MMM yy HH:mm z"),
-            new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z"),
-            new SimpleDateFormat("EEE, d MMM yyyy HH:mm z"),
-            new SimpleDateFormat("d MMM yy HH:mm z"),
-            new SimpleDateFormat("d MMM yy HH:mm:ss z"),
-            new SimpleDateFormat("d MMM yyyy HH:mm z"),
-            new SimpleDateFormat("d MMM yyyy HH:mm:ss z")
-    };
-
-    /**
-     * Parse an RFC 822 date string.
-     *
-     * @param dateString The date string to parse
-     * @return The date, or null if it could not be parsed.
-     */
-    public static Date parseRfc822DateString(String dateString) {
-        Date date = null;
-        for (SimpleDateFormat sdf : rfc822DateFormats) {
-            try {
-                date = sdf.parse(dateString);
-            } catch (ParseException e) {
-                // Don't care, we'll just run through all
-            }
-            if (date != null) {
-                return date;
-            }
-        }
-        return null;
-    }
 
     @Override
     public void startDocument() throws SAXException {
@@ -172,7 +141,7 @@ public class FeedReader extends DefaultHandler implements SAXHandler<Feed> {
                         tagHandler = new TagHandler(true, uri, localName, qName, attributes){
                             @Override
                             void onClose(String content) {
-                                entry.setPubDateTS(parseRfc822DateString(content).getTime());
+                                entry.setPubDateTS(HttpUtility.parseRfc822DateString(content).getTime());
                             }
                         };
                     }
