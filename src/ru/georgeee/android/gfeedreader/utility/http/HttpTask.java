@@ -41,13 +41,17 @@ public abstract class HttpTask<Result> extends AsyncTask<Void, Void, Result> {
         ex.printStackTrace();
     }
 
+    protected void handleException(Exception ex){
+        ex.printStackTrace();
+    }
+
     protected abstract Result getResult(HttpResponse httpResponse) throws IOException, CanceledException;
 
     @Override
     protected Result doInBackground(Void... params) {
-        HttpRequestBase base = getHttpRequestBase();
-        HttpResponse httpResponse;
         try {
+            HttpRequestBase base = getHttpRequestBase();
+            HttpResponse httpResponse;
             httpResponse = getHttpClient().execute(base);
             try {
                 return getResult(httpResponse);
@@ -56,6 +60,9 @@ public abstract class HttpTask<Result> extends AsyncTask<Void, Void, Result> {
             }
         } catch (IOException ex) {
             handleHttpIOException(ex);
+            return null;
+        }  catch (Exception ex){
+            handleException(ex);
             return null;
         }
     }

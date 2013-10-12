@@ -1,5 +1,6 @@
 package ru.georgeee.android.gfeedreader.utility.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -9,12 +10,12 @@ import java.util.ArrayList;
  * Time: 4:11
  * To change this template use File | Settings | File Templates.
  */
-public class Feed {
-    protected String title;
+public class Feed implements Serializable{
+    protected WebString title;
     protected String url;
     protected String iconUrl;
     protected String logoUrl;
-    protected String description;
+    protected WebString description;
 
     protected ArrayList<Entry> entries = new ArrayList<Entry>();
 
@@ -22,20 +23,20 @@ public class Feed {
         entries.add(entry);
     }
 
-    public int getEntryCount(){
-        return entries.size();
+    public Entry[] getAllEntries(){
+        Entry[] entriesArray = new Entry[entries.size()];
+        return entries.toArray(entriesArray);
     }
 
-    public Entry getEntry(int i){
-        return entries.get(i);
-    }
-
-    public String getTitle() {
+    public WebString getTitle() {
         return title;
     }
 
-    public void setTitle(String title) {
+    public void setTitle(WebString title) {
         this.title = title;
+    }
+    public void setTitle(String description) {
+        setTitle(new WebString(description));
     }
 
     public String getUrl() {
@@ -62,12 +63,15 @@ public class Feed {
         this.logoUrl = logoUrl;
     }
 
-    public String getDescription() {
+    public WebString getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(WebString description) {
         this.description = description;
+    }
+    public void setDescription(String description) {
+        setDescription(new WebString(description));
     }
 
     @Override

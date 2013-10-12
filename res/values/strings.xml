@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">GFeedReader</string>
+    <string name="searchViewBackText">Rss/atom feed url</string>
+    <string name="backBtn">←</string>
+    <string name="openFullArticle">Open full article</string>
 </resources>

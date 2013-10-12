@@ -22,7 +22,12 @@ public class FeedReaderTask extends XmlResponseHttpTask<Feed> {
 
     @Override
     protected SAXHandler<Feed> getSAXHandler() {
-        return new FeedReader();
+        try {
+            return new FeedReader(getUrl());
+        } catch (FeedReaderException e) {
+            handleSAXException(e);
+        }
+        return null;
     }
 
     @Override

@@ -1,5 +1,8 @@
 package ru.georgeee.android.gfeedreader.utility.model;
 
+import java.io.Serializable;
+import java.util.Date;
+
 /**
  * Created with IntelliJ IDEA.
  * User: georgeee
@@ -7,13 +10,23 @@ package ru.georgeee.android.gfeedreader.utility.model;
  * Time: 4:39
  * To change this template use File | Settings | File Templates.
  */
-public class Entry {
+public class Entry  implements Serializable {
     protected String id;
-    protected String title;
+    protected WebString title;
     protected String url;
-    protected String description;
-    protected long pubDateTS;
+    protected WebString content;
+    protected Date pubDate;
     protected String imageUrl;
+
+    public WebString getSummary() {
+        return summary;
+    }
+
+    public void setSummary(WebString summary) {
+        this.summary = summary;
+    }
+
+    protected WebString summary;
 
     public String getId() {
         return id;
@@ -23,12 +36,15 @@ public class Entry {
         this.id = id;
     }
 
-    public String getTitle() {
+    public WebString getTitle() {
         return title;
     }
 
-    public void setTitle(String title) {
+    public void setTitle(WebString title) {
         this.title = title;
+    }
+    public void setTitle(String description) {
+        setTitle(new WebString(description));
     }
 
     public String getUrl() {
@@ -39,20 +55,23 @@ public class Entry {
         this.url = url;
     }
 
-    public String getDescription() {
-        return description;
+    public WebString getContent() {
+        return content;
     }
 
+    public void setContent(WebString content) {
+        this.content = content;
+    }
     public void setDescription(String description) {
-        this.description = description;
+        setContent(new WebString(description));
     }
 
-    public long getPubDateTS() {
-        return pubDateTS;
+    public Date getPubDate() {
+        return pubDate;
     }
 
-    public void setPubDateTS(long pubDateTS) {
-        this.pubDateTS = pubDateTS;
+    public void setPubDate(Date pubDate) {
+        this.pubDate = pubDate;
     }
 
     public String getImageUrl() {
@@ -69,8 +88,8 @@ public class Entry {
                 "id='" + id + '\'' +
                 ", title='" + title + '\'' +
                 ", url='" + url + '\'' +
-                ", description='" + description + '\'' +
-                ", pubDateTS=" + pubDateTS +
+                ", content='" + content + '\'' +
+                ", pubDateTS=" + pubDate +
                 ", imageUrl='" + imageUrl + '\'' +
                 '}';
     }

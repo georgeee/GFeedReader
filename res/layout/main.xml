@@ -4,10 +4,18 @@
               android:layout_width="fill_parent"
               android:layout_height="fill_parent"
         >
-    <TextView
+    <SearchView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="Hello World, MainActivity"
-            />
+            android:id="@+id/searchView"
+            android:queryHint="@string/searchViewBackText" android:iconifiedByDefault="false"/>
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/feedTitle" android:layout_gravity="right|center_vertical"/>
+    <ListView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/entryList" android:layout_gravity="center"/>
 </LinearLayout>
 

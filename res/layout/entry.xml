@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="fill_parent">
+
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:layout_gravity="left|center_vertical">
+        <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/backBtn"
+                android:id="@+id/backBtn"/>
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:text="Feed title"
+                android:id="@+id/entryPageFeedTitle" android:layout_marginLeft="10dp" android:textSize="22dp"/>
+    </LinearLayout>
+    <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Entry title"
+                android:id="@+id/entryPageEntryTitle" android:layout_gravity="left|center_vertical"
+                android:textSize="20dp"/>
+        <WebView android:layout_width="fill_parent" android:layout_height="match_parent" android:id="@+id/entryPageContent"
+                 android:layout_gravity="left|center_vertical"
+                 android:layout_alignLeft="@+id/entryPageEntryTitle" android:layout_below="@+id/openFullArticle"
+                 android:layout_alignParentBottom="true"/>
+        <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/openFullArticle"
+                android:id="@+id/openFullArticle" android:layout_gravity="left|center_vertical"
+                android:layout_alignParentRight="true" android:layout_below="@+id/entryPageEntryTitle"/>
+    </RelativeLayout>
+</LinearLayout>

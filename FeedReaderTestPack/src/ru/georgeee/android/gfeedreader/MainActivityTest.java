@@ -22,10 +22,21 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
     }
 
     public void testFeadReader() throws Exception {
-        for (String url : new String[]{
+        for (final String url : new String[]{
                 "http://feeds.feedburner.com/time/topstories?format=xml",
                 "http://georgeee.podfm.ru/rss/rss.xml",
-        })
-            Log.d(getClass().getName(), "Feed loaded: " + new FeedReaderTask(url).executeOnHttpTaskExecutor().get());
+                "http://blog.case.edu/news/feed.atom",
+                "http://bblfish.net/blog/blog.atom",
+        }){
+            FeedReaderTask task = new FeedReaderTask(url){
+                @Override
+                protected void onPostExecute(Feed feed) {
+                    Log.d(MainActivityTest.class.getName(), "(onPostExecute) Feed "+url+" loaded: " + feed);
+                }
+            };
+            Feed feed = task.executeOnHttpTaskExecutor().get();
+            Log.d(MainActivityTest.class.getName(), "Feed "+url+" loaded: " + feed);
+        }
+
     }
 }
