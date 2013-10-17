@@ -92,8 +92,8 @@ public class MainActivity extends Activity {
             TextView entryRowTitle = (TextView) rowView.findViewById(R.id.entryRowTitle);
             TextView entryRowTime = (TextView) rowView.findViewById(R.id.entryRowTime);
             final Entry entry = getItem(position);
-            entryRowTitle.setText(entry.getTitle().getText());
-            entryRowTime.setText(entry.getPubDate().toString());
+            entryRowTitle.setText(entry.getTitle()==null?"":entry.getTitle().getText());
+            entryRowTime.setText(entry.getPubDate()==null?"":entry.getPubDate().toString());
             rowView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
