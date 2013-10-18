@@ -13,6 +13,10 @@ http://yadi.sk/d/gDqtaA_rBAVsr
 
 Результат принимается до четверга (24 октября) 23:59. После этого оценка за это домашнее задание автоматически снижается в два раза.
 
+Полезные ссылки:
+=======
+HowTo: ListView, Adapter, getView and different list items’ layouts in one ListView: http://android.amberfog.com/?p=296
+
 Оценки:
 =======
 https://docs.google.com/spreadsheet/ccc?key=0AkYNnR0IM6SpdEJPcWRpUGNKYzRCUExnamJ4NmJMYXc&usp=sharing
