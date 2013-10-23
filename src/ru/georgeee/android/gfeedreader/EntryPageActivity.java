@@ -43,7 +43,7 @@ public class EntryPageActivity extends Activity {
         backBtn = (Button) findViewById(R.id.backBtn);
         openFullArticleBtn = (Button) findViewById(R.id.openFullArticle);
         Bundle extras = getIntent().getExtras();
-        feed = (Feed) extras.get("feed");
+        feed = (Feed) extras.get("feeds");
         entry = (Entry) extras.get("entry");
 
         getWindow().setTitle(feed.getTitle().getText()+" / "+entry.getTitle().getText());

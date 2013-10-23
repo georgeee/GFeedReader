@@ -7,21 +7,18 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
 import ru.georgeee.android.gfeedreader.utility.model.Entry;
 import ru.georgeee.android.gfeedreader.utility.model.Feed;
 import ru.georgeee.android.gfeedreader.utility.xml.FeedReaderTask;
 
-import java.util.List;
-
-public class MainActivity extends Activity {
+public class EntriesActivity extends Activity {
     Feed feed;
-    SearchView searchView;
     ListView entryList;
     TextView feedTitle;
     EntryListAdapter entryListAdapter;
+    Button backBtn;
 
     /**
      * Called when the activity is first created.
@@ -29,40 +26,21 @@ public class MainActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
-        searchView = (SearchView) findViewById(R.id.searchView);
+        setContentView(R.layout.entries);
         entryList = (ListView) findViewById(R.id.entryList);
         feedTitle = (TextView) findViewById(R.id.feedTitle);
-        entryListAdapter = new EntryListAdapter(this);
-        entryList.setAdapter(entryListAdapter);
-        final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        backBtn = (Button) findViewById(R.id.backBtn);
+        backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onQueryTextSubmit(String s) {
-                imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
-                processQuery();
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String s) {
-                return true;
+            public void onClick(View view) {
+                finish();
             }
         });
-        imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
-        if(searchView.getQuery().toString().isEmpty())
-            searchView.setQuery("http://stackoverflow.com/feeds/tag/android", true);
-    }
-
-    private void processQuery() {
-        String query = searchView.getQuery().toString();
-        new FeedReaderTask(query){
-            @Override
-            protected void onPostExecute(Feed feed) {
-                reloadFeed(feed);
-            }
-        }.executeOnHttpTaskExecutor();
+        entryListAdapter = new EntryListAdapter(this);
+        entryList.setAdapter(entryListAdapter);
+        Bundle extras = getIntent().getExtras();
+        feed = (Feed) extras.get("feeds");
+        reloadFeed(feed);
     }
 
     public void reloadFeed(Feed feed){
@@ -98,7 +76,7 @@ public class MainActivity extends Activity {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(getContext(), EntryPageActivity.class);
-                    intent.putExtra("feed", feed);
+                    intent.putExtra("feeds", feed);
                     intent.putExtra("entry", entry);
                     startActivity(intent);
                 }

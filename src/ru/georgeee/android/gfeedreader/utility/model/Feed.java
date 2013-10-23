@@ -1,7 +1,12 @@
 package ru.georgeee.android.gfeedreader.utility.model;
 
+import android.os.SystemClock;
+import org.apache.http.impl.cookie.DateUtils;
+import ru.georgeee.android.gfeedreader.utility.xml.FeedReaderTask;
+
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created with IntelliJ IDEA.
@@ -21,6 +26,10 @@ public class Feed implements Serializable{
 
     public void addEntry(Entry entry){
         entries.add(entry);
+    }
+
+    public Date getLastUpdated(){
+        return new Date(SystemClock.currentThreadTimeMillis());
     }
 
     public Entry[] getAllEntries(){
@@ -74,6 +83,10 @@ public class Feed implements Serializable{
         setDescription(new WebString(description));
     }
 
+    public void save(){
+        feeds.add(this);
+    }
+
     @Override
     public String toString() {
         return "Feed{" +
@@ -85,4 +98,11 @@ public class Feed implements Serializable{
                 ", entries=" + entries +
                 '}';
     }
+
+    static protected ArrayList<Feed> feeds = new ArrayList<Feed>();
+    public static Feed[] getAllFeeds(){
+        Feed[] feedsArray = new Feed[feeds.size()];
+        return feeds.toArray(feedsArray);
+    }
+
 }

@@ -12,30 +12,30 @@ import ru.georgeee.android.gfeedreader.utility.xml.FeedReaderTask;
  * <p/>
  * To run this test, you can type:
  * adb shell am instrument -w \
- * -e class ru.georgeee.android.gfeedreader.MainActivityTest \
+ * -e class ru.georgeee.android.gfeedreader.EntriesActivityTest \
  * ru.georgeee.android.gfeedreader.tests/android.test.InstrumentationTestRunner
  */
-public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActivity> {
+public class EntriesActivityTest extends ActivityInstrumentationTestCase2<EntriesActivity> {
 
-    public MainActivityTest() {
-        super("ru.georgeee.android.gfeedreader", MainActivity.class);
+    public EntriesActivityTest() {
+        super("ru.georgeee.android.gfeedreader", EntriesActivity.class);
     }
 
     public void testFeadReader() throws Exception {
         for (final String url : new String[]{
                 "http://feeds.feedburner.com/time/topstories?format=xml",
                 "http://georgeee.podfm.ru/rss/rss.xml",
-                "http://blog.case.edu/news/feed.atom",
+                "http://blog.case.edu/news/feeds.atom",
                 "http://bblfish.net/blog/blog.atom",
         }){
             FeedReaderTask task = new FeedReaderTask(url){
                 @Override
                 protected void onPostExecute(Feed feed) {
-                    Log.d(MainActivityTest.class.getName(), "(onPostExecute) Feed "+url+" loaded: " + feed);
+                    Log.d(EntriesActivityTest.class.getName(), "(onPostExecute) Feed "+url+" loaded: " + feed);
                 }
             };
             Feed feed = task.executeOnHttpTaskExecutor().get();
-            Log.d(MainActivityTest.class.getName(), "Feed "+url+" loaded: " + feed);
+            Log.d(EntriesActivityTest.class.getName(), "Feed "+url+" loaded: " + feed);
         }
 
     }

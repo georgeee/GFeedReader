@@ -102,12 +102,13 @@ public class FeedReader extends DefaultHandler implements SAXHandler<Feed> {
         TagHandler tagHandler = null;
         boolean isUriEmpty = (uri == null || uri.isEmpty()) || (feedFormat == FEED_FORMAT_ATOM && uri.equals(ATOM_XMLNS));
         if (feedFormat == FEED_FORMAT_UNDEFINED) {
-            if ((isUriEmpty || uri.equals(ATOM_XMLNS)) && localName.equals("feed")) {
+            if ((isUriEmpty || uri.equals(ATOM_XMLNS)) && localName.equals("feeds")) {
                 feedFormat = FEED_FORMAT_ATOM;
                 feed = new Feed();
             } else if (isUriEmpty && localName.equals("rss")) feedFormat = FEED_FORMAT_RSS;
-            else
-                throw new FeedReaderException("Unknown feed format : localName=" + localName + " uri=" + uri + " qName=" + qName);
+            else {
+                throw new FeedReaderException("Unknown feeds format : localName=" + localName + " uri=" + uri + " qName=" + qName);
+            }
         } else if (feedFormat == FEED_FORMAT_RSS) {
             if (feed == null) {//Inside rss tag
                 if (isUriEmpty && localName.equals("channel")) {

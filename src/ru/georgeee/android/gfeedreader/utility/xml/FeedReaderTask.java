@@ -17,6 +17,7 @@ public class FeedReaderTask extends XmlResponseHttpTask<Feed> {
     String rssUrl;
 
     public FeedReaderTask(String rssUrl) {
+        if(!rssUrl.startsWith("[a-z0-9]+\\://")) rssUrl = "http://"+rssUrl;
         this.rssUrl = rssUrl;
     }
 

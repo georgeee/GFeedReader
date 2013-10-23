@@ -23,3 +23,8 @@ local.properties
 # IDEA project files
 .idea/
 *.iml
+
+
+*.*.un~
+*.swp
+.swp
