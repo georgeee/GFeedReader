@@ -21,20 +21,15 @@ public class Feed implements Serializable{
     protected String iconUrl;
     protected String logoUrl;
     protected WebString description;
+    protected String feedUrl;
+    protected Date lastUpdated;
 
-    protected ArrayList<Entry> entries = new ArrayList<Entry>();
-
-    public void addEntry(Entry entry){
-        entries.add(entry);
+    public Date getLastUpdated() {
+        return lastUpdated;
     }
 
-    public Date getLastUpdated(){
-        return new Date(SystemClock.currentThreadTimeMillis());
-    }
-
-    public Entry[] getAllEntries(){
-        Entry[] entriesArray = new Entry[entries.size()];
-        return entries.toArray(entriesArray);
+    public void setLastUpdated(Date lastUpdated) {
+        this.lastUpdated = lastUpdated;
     }
 
     public WebString getTitle() {
@@ -83,10 +78,6 @@ public class Feed implements Serializable{
         setDescription(new WebString(description));
     }
 
-    public void save(){
-        feeds.add(this);
-    }
-
     @Override
     public String toString() {
         return "Feed{" +
@@ -95,14 +86,14 @@ public class Feed implements Serializable{
                 ", iconUrl='" + iconUrl + '\'' +
                 ", logoUrl='" + logoUrl + '\'' +
                 ", description='" + description + '\'' +
-                ", entries=" + entries +
                 '}';
     }
 
-    static protected ArrayList<Feed> feeds = new ArrayList<Feed>();
-    public static Feed[] getAllFeeds(){
-        Feed[] feedsArray = new Feed[feeds.size()];
-        return feeds.toArray(feedsArray);
+    public String getFeedUrl() {
+        return feedUrl;
     }
 
+    public void setFeedUrl(String feedUrl) {
+        this.feedUrl = feedUrl;
+    }
 }

@@ -1,4 +1,4 @@
-package ru.georgeee.android.gfeedreader;
+package ru.georgeee.android.gfeedreader.ui;
 
 import android.app.Activity;
 import android.content.Context;
@@ -13,6 +13,7 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebView;
 import android.widget.*;
+import ru.georgeee.android.gfeedreader.R;
 import ru.georgeee.android.gfeedreader.utility.model.Entry;
 import ru.georgeee.android.gfeedreader.utility.model.Feed;
 import ru.georgeee.android.gfeedreader.utility.model.WebString;

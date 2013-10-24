@@ -2,6 +2,7 @@ package ru.georgeee.android.gfeedreader;
 
 import android.test.ActivityInstrumentationTestCase2;
 import android.util.Log;
+import ru.georgeee.android.gfeedreader.ui.EntriesActivity;
 import ru.georgeee.android.gfeedreader.utility.model.Feed;
 import ru.georgeee.android.gfeedreader.utility.xml.FeedReaderTask;
 

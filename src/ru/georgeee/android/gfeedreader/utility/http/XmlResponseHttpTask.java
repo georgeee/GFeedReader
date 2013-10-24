@@ -1,5 +1,6 @@
 package ru.georgeee.android.gfeedreader.utility.http;
 
+import android.util.Log;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;

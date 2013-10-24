@@ -5,8 +5,9 @@
           android:versionName="1.0">
     <uses-sdk android:minSdkVersion="14"/>
     <uses-permission android:name="android.permission.INTERNET"/>
-    <application android:label="@string/app_name" android:icon="@drawable/ic_launcher">
-        <activity android:name=".FeedsActivity"
+    <application android:label="@string/app_name" android:icon="@drawable/ic_launcher"
+                 android:name=".SFApplication">
+        <activity android:name=".ui.FeedsActivity"
                   android:label="@string/app_name"
                   android:windowSoftInputMode="stateHidden"
                 >
@@ -15,9 +16,16 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".EntryPageActivity">
+        <activity android:name=".ui.EntryPageActivity">
         </activity>
-        <activity android:name=".EntriesActivity">
+        <activity android:name=".ui.EntriesActivity">
         </activity>
+
+        <service
+                android:name=".service.SFCommandExecutorService"
+                android:exported="false" >
+        </service>
+        <receiver android:name=".GAlarmBroadcastReciever">
+        </receiver>
     </application>
 </manifest>

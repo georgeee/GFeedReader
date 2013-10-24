@@ -4,6 +4,7 @@ import android.os.AsyncTask;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpRequestBase;
+import ru.georgeee.android.gfeedreader.utility.TaskHadler;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -18,7 +19,7 @@ import java.util.concurrent.Executor;
  * Time: 15:07
  * To change this template use File | Settings | File Templates.
  */
-public abstract class HttpTask<Result> extends AsyncTask<Void, Void, Result> {
+public abstract class HttpTask<Result>  extends TaskHadler<Result>{
     protected String[] bodyParams;
 
     public String[] getBodyParams() {
@@ -35,7 +36,6 @@ public abstract class HttpTask<Result> extends AsyncTask<Void, Void, Result> {
 
     protected abstract HttpRequestBase getHttpRequestBase();
 
-    protected abstract Executor getExecutor();
 
     protected void handleHttpIOException(IOException ex) {
         ex.printStackTrace();
@@ -48,7 +48,7 @@ public abstract class HttpTask<Result> extends AsyncTask<Void, Void, Result> {
     protected abstract Result getResult(HttpResponse httpResponse) throws IOException, CanceledException;
 
     @Override
-    protected Result doInBackground(Void... params) {
+    protected Result doInBackground() {
         try {
             HttpRequestBase base = getHttpRequestBase();
             HttpResponse httpResponse;
@@ -67,9 +67,6 @@ public abstract class HttpTask<Result> extends AsyncTask<Void, Void, Result> {
         }
     }
 
-    public AsyncTask<Void, Void, Result> executeOnHttpTaskExecutor() {
-        return executeOnExecutor(getExecutor());
-    }
 
     protected String composeUrl(String urlBase, Map<String, String> getParams) throws UnsupportedEncodingException {
         StringBuilder sb = new StringBuilder(urlBase);

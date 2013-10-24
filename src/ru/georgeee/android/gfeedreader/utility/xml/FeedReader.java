@@ -4,6 +4,7 @@ import android.util.Log;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
+import ru.georgeee.android.gfeedreader.utility.Storage;
 import ru.georgeee.android.gfeedreader.utility.http.HttpUtility;
 import ru.georgeee.android.gfeedreader.utility.model.Entry;
 import ru.georgeee.android.gfeedreader.utility.model.Feed;
@@ -12,6 +13,7 @@ import ru.georgeee.android.gfeedreader.utility.model.WebString;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created with IntelliJ IDEA.
@@ -27,7 +29,7 @@ public class FeedReader extends DefaultHandler implements SAXHandler<Feed> {
     protected static final int FEED_FORMAT_ATOM = 2;
     protected int feedFormat;
     protected Feed feed;
-    protected Entry entry = null;
+    protected Entry entry;
     ArrayList<TagHandler> tagStack;
     ArrayList<StringBuilder> buffers;
     ArrayList<URL> urlBases;
@@ -78,6 +80,7 @@ public class FeedReader extends DefaultHandler implements SAXHandler<Feed> {
     @Override
     public void startDocument() throws SAXException {
         feedFormat = FEED_FORMAT_UNDEFINED;
+        feed = null;
         entry = null;
         tagStack = new ArrayList<TagHandler>();
         buffers = new ArrayList<StringBuilder>();
@@ -86,7 +89,7 @@ public class FeedReader extends DefaultHandler implements SAXHandler<Feed> {
 
     @Override
     public void endDocument() throws SAXException {
-
+        if(feed != null) Storage.getInstance().saveFeed(feed);
     }
 
     protected boolean checkPathInStack(String... components) {
@@ -102,9 +105,11 @@ public class FeedReader extends DefaultHandler implements SAXHandler<Feed> {
         TagHandler tagHandler = null;
         boolean isUriEmpty = (uri == null || uri.isEmpty()) || (feedFormat == FEED_FORMAT_ATOM && uri.equals(ATOM_XMLNS));
         if (feedFormat == FEED_FORMAT_UNDEFINED) {
-            if ((isUriEmpty || uri.equals(ATOM_XMLNS)) && localName.equals("feeds")) {
+            if ((isUriEmpty || uri.equals(ATOM_XMLNS)) && localName.equals("feed")) {
                 feedFormat = FEED_FORMAT_ATOM;
                 feed = new Feed();
+                feed.setLastUpdated(new Date());
+                feed.setFeedUrl(documentSrcUrl.toString());
             } else if (isUriEmpty && localName.equals("rss")) feedFormat = FEED_FORMAT_RSS;
             else {
                 throw new FeedReaderException("Unknown feeds format : localName=" + localName + " uri=" + uri + " qName=" + qName);
@@ -113,15 +118,18 @@ public class FeedReader extends DefaultHandler implements SAXHandler<Feed> {
             if (feed == null) {//Inside rss tag
                 if (isUriEmpty && localName.equals("channel")) {
                     feed = new Feed();
+                    feed.setLastUpdated(new Date());
+                    feed.setFeedUrl(documentSrcUrl.toString());
                 } else throw new FeedReaderException("Channel should be the only child of rss tag");
             } else if (entry == null) {//Inside channel tag
                 if (isUriEmpty) {
                     if (localName.equals("item")) {
                         entry = new Entry();
+                        entry.setFeedUrl(feed.getFeedUrl());
                         tagHandler = new TagHandler(false, uri, localName, qName) {
                             @Override
                             void onClose(String content) {
-                                feed.addEntry(entry);
+                                Storage.getInstance().saveEntry(entry);
                                 entry = null;
                             }
                         };
@@ -201,10 +209,11 @@ public class FeedReader extends DefaultHandler implements SAXHandler<Feed> {
                 if (isUriEmpty) {
                     if (localName.equals("entry")) {
                         entry = new Entry();
+                        entry.setFeedUrl(feed.getFeedUrl());
                         tagHandler = new TagHandler(false, uri, localName, qName) {
                             @Override
                             void onClose(String content) {
-                                feed.addEntry(entry);
+                                Storage.getInstance().saveEntry(entry);
                                 entry = null;
                             }
                         };

@@ -1,5 +1,6 @@
 package ru.georgeee.android.gfeedreader.utility.xml;
 
+import android.util.Log;
 import ru.georgeee.android.gfeedreader.utility.http.HttpUtility;
 import ru.georgeee.android.gfeedreader.utility.http.XmlResponseHttpTask;
 import ru.georgeee.android.gfeedreader.utility.model.Feed;
@@ -14,11 +15,11 @@ import java.util.concurrent.Executor;
  * To change this template use File | Settings | File Templates.
  */
 public class FeedReaderTask extends XmlResponseHttpTask<Feed> {
-    String rssUrl;
+    String feedUrl;
 
-    public FeedReaderTask(String rssUrl) {
-        if(!rssUrl.startsWith("[a-z0-9]+\\://")) rssUrl = "http://"+rssUrl;
-        this.rssUrl = rssUrl;
+    public FeedReaderTask(String feedUrl) {
+        if(!feedUrl.matches("^[a-z0-9A-Z]+://.*$")) feedUrl = "http://"+ feedUrl;
+        this.feedUrl = feedUrl;
     }
 
     @Override
@@ -33,11 +34,11 @@ public class FeedReaderTask extends XmlResponseHttpTask<Feed> {
 
     @Override
     protected String getUrl() {
-        return rssUrl;
+        return feedUrl;
     }
 
     @Override
-    protected Executor getExecutor() {
+    protected Executor getPreferedExecutor() {
         return HttpUtility.getInstance().getRssRetrieveExecutor();
     }
 }

@@ -10,13 +10,22 @@ import java.util.Date;
  * Time: 4:39
  * To change this template use File | Settings | File Templates.
  */
-public class Entry  implements Serializable {
+public class Entry  implements Serializable, Comparable<Entry> {
     protected String id;
     protected WebString title;
     protected String url;
     protected WebString content;
     protected Date pubDate;
     protected String imageUrl;
+    protected String feedUrl;
+
+    public String getFeedUrl() {
+        return feedUrl;
+    }
+
+    public void setFeedUrl(String feedUrl) {
+        this.feedUrl = feedUrl;
+    }
 
     public WebString getSummary() {
         return summary;
@@ -26,7 +35,28 @@ public class Entry  implements Serializable {
         this.summary = summary;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Entry)) return false;
+        return getUniqueIdentifier().equals(((Entry) o).getUniqueIdentifier());
+    }
+
+    @Override
+    public int hashCode() {
+        return getUniqueIdentifier().hashCode();
+    }
+
     protected WebString summary;
+
+
+
+    public String getUniqueIdentifier(){
+        if(id!=null) return id;
+        if(url!=null) return feedUrl+"  "+url;
+        if(title != null) return feedUrl+"  "+title;
+        return null;
+    }
 
     public String getId() {
         return id;
@@ -92,5 +122,12 @@ public class Entry  implements Serializable {
                 ", pubDateTS=" + pubDate +
                 ", imageUrl='" + imageUrl + '\'' +
                 '}';
+    }
+
+    @Override
+    public int compareTo(Entry entry) {
+        int cmpr = pubDate.compareTo(entry.pubDate);
+        if(cmpr != 0) return cmpr;
+        else return getUniqueIdentifier().compareTo(entry.getUniqueIdentifier());
     }
 }

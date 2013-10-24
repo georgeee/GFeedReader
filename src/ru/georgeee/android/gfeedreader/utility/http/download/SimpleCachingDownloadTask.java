@@ -24,7 +24,7 @@ public class SimpleCachingDownloadTask extends CachingHttpDownloadTask {
     }
 
     @Override
-    protected Executor getExecutor() {
+    protected Executor getPreferedExecutor() {
         return HttpUtility.getInstance().getFileDownloadExecutor();
     }
 }

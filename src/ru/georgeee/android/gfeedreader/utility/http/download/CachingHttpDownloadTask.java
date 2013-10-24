@@ -29,12 +29,12 @@ public abstract class CachingHttpDownloadTask extends HttpTask<File> {
     }
 
     @Override
-    protected File doInBackground(Void... params) {
+    protected File doInBackground() {
         String url = getUrl();
         FileCacher fileCacher = FileCacher.getInstance();
         File file = fileCacher.registerFile(url);
         if (!file.exists()) {
-            file = super.doInBackground(params);
+            file = super.doInBackground();
         }
         fileCacher.launchCacheCleaner();
         return file;
