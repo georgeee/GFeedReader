@@ -1,14 +1,14 @@
 package ru.georgeee.android.gfeedreader;
 
-import android.app.IntentService;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
-import ru.georgeee.android.gfeedreader.service.SFCommandExecutorService;
-import ru.georgeee.android.gfeedreader.utility.Storage;
+import ru.georgeee.android.gfeedreader.utility.db.EntryTable;
+import ru.georgeee.android.gfeedreader.utility.db.FeedTable;
 import ru.georgeee.android.gfeedreader.utility.model.Feed;
-import ru.georgeee.android.gfeedreader.utility.xml.FeedReaderTask;
+
+import java.io.IOException;
 
 /**
  * Created with IntelliJ IDEA.
@@ -25,11 +25,18 @@ public class GAlarmBroadcastReciever extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if(helper == null) helper = SFServiceHelper.getInstance();
-        Feed [] feeds = Storage.getInstance().getFeeds();
-        for(Feed feed : feeds) {
-            String feedUrl = feed.getFeedUrl();
-            int requestId = helper.updateFeedAction(feedUrl);
-            Log.d(getClass().getCanonicalName(), feedUrl + " -> " + requestId);
+        FeedTable feedTable = FeedTable.getInstance(context);
+        EntryTable entryTable = EntryTable.getInstance(context);
+        try {
+            Feed [] feeds = feedTable.loadFeeds();
+            for(Feed feed : feeds) {
+                int requestId = helper.updateFeedAction(feed);
+                Log.d(getClass().getCanonicalName(), feed.getFeedUrl() + " -> " + requestId);
+            }
+        } catch (IOException e) {
+            Log.e(getClass().getCanonicalName(), e.toString());
+        } catch (ClassNotFoundException e) {
+            Log.e(getClass().getCanonicalName(), e.toString());
         }
     }
 }

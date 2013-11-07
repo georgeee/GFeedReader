@@ -7,10 +7,9 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.ResultReceiver;
 import ru.georgeee.android.gfeedreader.handlers.SFBaseCommand;
-import ru.georgeee.android.gfeedreader.utility.Storage;
+import ru.georgeee.android.gfeedreader.utility.db.EntryTable;
 import ru.georgeee.android.gfeedreader.utility.model.Entry;
 import ru.georgeee.android.gfeedreader.utility.model.Feed;
-import ru.georgeee.android.gfeedreader.utility.xml.FeedReaderTask;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,22 +22,14 @@ import java.util.Collections;
  * To change this template use File | Settings | File Templates.
  */
 public class LoadFeedEntriesCommand extends SFBaseCommand {
-    String feedUrl;
+    Feed feed;
 
     @Override
     protected void doExecute(Intent intent, Context context, ResultReceiver callback) {
-        Storage storage = Storage.getInstance();
+        EntryTable table = EntryTable.getInstance(context);
         Bundle bundle = new Bundle();
         try{
-            Entry[] entries = storage.getFeedEntries(feedUrl);
-            if(entries == null){
-                new FeedReaderTask(feedUrl).executeInCurrentThread();
-                entries = storage.getFeedEntries(feedUrl);
-            }
-            if(entries == null){
-                throw new NullPointerException();
-            }
-            Feed feed = Storage.getInstance().getFeedMeta(feedUrl);
+            Entry[] entries = table.loadEntries(feed);
             ArrayList<Entry> _entries = new ArrayList<Entry>();
             Collections.addAll(_entries, entries);
             bundle.putSerializable("entries", _entries);
@@ -58,7 +49,7 @@ public class LoadFeedEntriesCommand extends SFBaseCommand {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(feedUrl);
+        dest.writeSerializable(feed);
     }
     public static final Parcelable.Creator<LoadFeedEntriesCommand> CREATOR = new Parcelable.Creator<LoadFeedEntriesCommand>() {
         public LoadFeedEntriesCommand createFromParcel(Parcel in) {
@@ -71,11 +62,11 @@ public class LoadFeedEntriesCommand extends SFBaseCommand {
     };
 
     private LoadFeedEntriesCommand(Parcel in) {
-        feedUrl = in.readString();
+        feed = (Feed) in.readSerializable();
     }
 
-    public LoadFeedEntriesCommand(String feedUrl) {
-        this.feedUrl = feedUrl;
+    public LoadFeedEntriesCommand(Feed feed) {
+        this.feed = feed;
     }
 
 }

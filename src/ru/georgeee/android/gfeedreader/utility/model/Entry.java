@@ -10,14 +10,33 @@ import java.util.Date;
  * Time: 4:39
  * To change this template use File | Settings | File Templates.
  */
-public class Entry  implements Serializable, Comparable<Entry> {
+public class Entry implements Serializable, Comparable<Entry> {
+    protected long entryId;
+    protected long feedId;
     protected String id;
     protected WebString title;
-    protected String url;
     protected WebString content;
+    protected WebString summary;
+    protected String url;
     protected Date pubDate;
     protected String imageUrl;
     protected String feedUrl;
+
+    public long getEntryId() {
+        return entryId;
+    }
+
+    public void setEntryId(long entryId) {
+        this.entryId = entryId;
+    }
+
+    public long getFeedId() {
+        return feedId;
+    }
+
+    public void setFeedId(long feedId) {
+        this.feedId = feedId;
+    }
 
     public String getFeedUrl() {
         return feedUrl;
@@ -47,14 +66,10 @@ public class Entry  implements Serializable, Comparable<Entry> {
         return getUniqueIdentifier().hashCode();
     }
 
-    protected WebString summary;
-
-
-
-    public String getUniqueIdentifier(){
-        if(id!=null) return id;
-        if(url!=null) return feedUrl+"  "+url;
-        if(title != null) return feedUrl+"  "+title;
+    public String getUniqueIdentifier() {
+        if (id != null) return id;
+        if (url != null) return feedUrl + "  " + url;
+        if (title != null) return feedUrl + "  " + title;
         return null;
     }
 
@@ -70,11 +85,12 @@ public class Entry  implements Serializable, Comparable<Entry> {
         return title;
     }
 
-    public void setTitle(WebString title) {
-        this.title = title;
-    }
     public void setTitle(String description) {
         setTitle(new WebString(description));
+    }
+
+    public void setTitle(WebString title) {
+        this.title = title;
     }
 
     public String getUrl() {
@@ -92,6 +108,7 @@ public class Entry  implements Serializable, Comparable<Entry> {
     public void setContent(WebString content) {
         this.content = content;
     }
+
     public void setDescription(String description) {
         setContent(new WebString(description));
     }
@@ -127,7 +144,7 @@ public class Entry  implements Serializable, Comparable<Entry> {
     @Override
     public int compareTo(Entry entry) {
         int cmpr = pubDate.compareTo(entry.pubDate);
-        if(cmpr != 0) return cmpr;
+        if (cmpr != 0) return cmpr;
         else return getUniqueIdentifier().compareTo(entry.getUniqueIdentifier());
     }
 }

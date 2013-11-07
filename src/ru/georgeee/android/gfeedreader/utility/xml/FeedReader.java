@@ -4,12 +4,14 @@ import android.util.Log;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
-import ru.georgeee.android.gfeedreader.utility.Storage;
+import ru.georgeee.android.gfeedreader.utility.db.EntryTable;
+import ru.georgeee.android.gfeedreader.utility.db.FeedTable;
 import ru.georgeee.android.gfeedreader.utility.http.HttpUtility;
 import ru.georgeee.android.gfeedreader.utility.model.Entry;
 import ru.georgeee.android.gfeedreader.utility.model.Feed;
 import ru.georgeee.android.gfeedreader.utility.model.WebString;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -30,21 +32,25 @@ public class FeedReader extends DefaultHandler implements SAXHandler<Feed> {
     protected int feedFormat;
     protected Feed feed;
     protected Entry entry;
+    protected EntryTable entryTable;
+    protected FeedTable feedTable;
     ArrayList<TagHandler> tagStack;
     ArrayList<StringBuilder> buffers;
     ArrayList<URL> urlBases;
     URL documentSrcUrl;
 
-    public FeedReader() throws FeedReaderException {
-        this(null);
+    public FeedReader(FeedTable feedTable, EntryTable entryTable) throws FeedReaderException {
+        this(null, feedTable, entryTable);
     }
 
-    public FeedReader(String documentSrcUrl) throws FeedReaderException {
+    public FeedReader(String documentSrcUrl, FeedTable feedTable, EntryTable entryTable) throws FeedReaderException {
         try {
             this.documentSrcUrl = new URL(documentSrcUrl);
         } catch (MalformedURLException e) {
             throw new FeedReaderException(e);
         }
+        this.feedTable = feedTable;
+        this.entryTable = entryTable;
     }
 
     protected static WebString parseAtomText(String text, String type) {
@@ -89,7 +95,13 @@ public class FeedReader extends DefaultHandler implements SAXHandler<Feed> {
 
     @Override
     public void endDocument() throws SAXException {
-        if(feed != null) Storage.getInstance().saveFeed(feed);
+        if(feed != null){
+            try {
+                feedTable.saveFeed(feed);
+            } catch (IOException e) {
+                Log.e(getClass().getCanonicalName(), e.toString());
+            }
+        }
     }
 
     protected boolean checkPathInStack(String... components) {
@@ -110,6 +122,11 @@ public class FeedReader extends DefaultHandler implements SAXHandler<Feed> {
                 feed = new Feed();
                 feed.setLastUpdated(new Date());
                 feed.setFeedUrl(documentSrcUrl.toString());
+                try {
+                    feedTable.saveFeed(feed, true);
+                } catch (IOException e) {
+                    Log.e(getClass().getCanonicalName(), e.toString());
+                }
             } else if (isUriEmpty && localName.equals("rss")) feedFormat = FEED_FORMAT_RSS;
             else {
                 throw new FeedReaderException("Unknown feeds format : localName=" + localName + " uri=" + uri + " qName=" + qName);
@@ -120,16 +137,26 @@ public class FeedReader extends DefaultHandler implements SAXHandler<Feed> {
                     feed = new Feed();
                     feed.setLastUpdated(new Date());
                     feed.setFeedUrl(documentSrcUrl.toString());
+                    try {
+                        feedTable.saveFeed(feed, true);
+                    } catch (IOException e) {
+                        Log.e(getClass().getCanonicalName(), e.toString());
+                    }
                 } else throw new FeedReaderException("Channel should be the only child of rss tag");
             } else if (entry == null) {//Inside channel tag
                 if (isUriEmpty) {
                     if (localName.equals("item")) {
                         entry = new Entry();
                         entry.setFeedUrl(feed.getFeedUrl());
+                        entry.setFeedId(feed.getFeedId());
                         tagHandler = new TagHandler(false, uri, localName, qName) {
                             @Override
                             void onClose(String content) {
-                                Storage.getInstance().saveEntry(entry);
+                                try {
+                                    entryTable.saveEntry(entry);
+                                }  catch (IOException e) {
+                                    Log.e(getClass().getCanonicalName(), e.toString());
+                                }
                                 entry = null;
                             }
                         };
@@ -210,10 +237,15 @@ public class FeedReader extends DefaultHandler implements SAXHandler<Feed> {
                     if (localName.equals("entry")) {
                         entry = new Entry();
                         entry.setFeedUrl(feed.getFeedUrl());
+                        entry.setFeedId(feed.getFeedId());
                         tagHandler = new TagHandler(false, uri, localName, qName) {
                             @Override
                             void onClose(String content) {
-                                Storage.getInstance().saveEntry(entry);
+                                try {
+                                    entryTable.saveEntry(entry);
+                                }  catch (IOException e) {
+                                    Log.e(getClass().getCanonicalName(), e.toString());
+                                }
                                 entry = null;
                             }
                         };

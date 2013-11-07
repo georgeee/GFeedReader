@@ -16,7 +16,6 @@
  */
 package ru.georgeee.android.gfeedreader;
 
-import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -26,9 +25,10 @@ import android.os.ResultReceiver;
 import android.util.SparseArray;
 import ru.georgeee.android.gfeedreader.handlers.SFBaseCommand;
 import ru.georgeee.android.gfeedreader.handlers.impl.LoadFeedEntriesCommand;
-import ru.georgeee.android.gfeedreader.handlers.impl.LoadFeedMetaCommand;
+import ru.georgeee.android.gfeedreader.handlers.impl.ObtainFeedCommand;
 import ru.georgeee.android.gfeedreader.handlers.impl.UpdateFeedCommand;
 import ru.georgeee.android.gfeedreader.service.SFCommandExecutorService;
+import ru.georgeee.android.gfeedreader.utility.model.Feed;
 
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -67,19 +67,19 @@ public class SFServiceHelper {
     }
 
 
-    public int loadFeedMetaAction(String feedUrl) {
+    public int obtainFeedAction(String feedUrl) {
         final int requestId = createId();
-        Intent i = createIntent(context, new LoadFeedMetaCommand(feedUrl), requestId);
+        Intent i = createIntent(context, new ObtainFeedCommand(feedUrl), requestId);
         return runRequest(requestId, i);
     }
-    public int loadFeedEntriesAction(String feedUrl) {
+    public int loadFeedEntriesAction(Feed feed) {
         final int requestId = createId();
-        Intent i = createIntent(context, new LoadFeedEntriesCommand(feedUrl), requestId);
+        Intent i = createIntent(context, new LoadFeedEntriesCommand(feed), requestId);
         return runRequest(requestId, i);
     }
-    public int updateFeedAction(String feedUrl) {
+    public int updateFeedAction(Feed feed) {
         final int requestId = createId();
-        Intent i = createIntent(context, new UpdateFeedCommand(feedUrl), requestId);
+        Intent i = createIntent(context, new UpdateFeedCommand(feed), requestId);
         return runRequest(requestId, i);
     }
 

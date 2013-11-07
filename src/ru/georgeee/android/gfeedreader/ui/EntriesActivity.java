@@ -1,22 +1,17 @@
 package ru.georgeee.android.gfeedreader.ui;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
 import ru.georgeee.android.gfeedreader.R;
 import ru.georgeee.android.gfeedreader.SFBaseActivity;
-import ru.georgeee.android.gfeedreader.handlers.SFBaseCommand;
-import ru.georgeee.android.gfeedreader.handlers.impl.LoadFeedMetaCommand;
 import ru.georgeee.android.gfeedreader.handlers.impl.UpdateFeedCommand;
 import ru.georgeee.android.gfeedreader.utility.model.Entry;
 import ru.georgeee.android.gfeedreader.utility.model.Feed;
-import ru.georgeee.android.gfeedreader.utility.xml.FeedReaderTask;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,8 +24,6 @@ public class EntriesActivity extends SFBaseActivity {
         super.onServiceCallback(requestId, requestIntent, resultCode, resultData);
         if (getServiceHelper().check(requestIntent, UpdateFeedCommand.class)) {
             if (resultCode == UpdateFeedCommand.RESPONSE_SUCCESS) {
-                feed = (Feed) resultData.get("feed");
-                ArrayList<Entry> entries = (ArrayList<Entry>) resultData.get("entries");
                 reloadFeed(entries);
             }
         }
@@ -112,7 +105,7 @@ public class EntriesActivity extends SFBaseActivity {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(getContext(), EntryPageActivity.class);
-                    intent.putExtra("feeds", feed);
+                    intent.putExtra("feed", feed);
                     intent.putExtra("entry", entry);
                     startActivity(intent);
                 }

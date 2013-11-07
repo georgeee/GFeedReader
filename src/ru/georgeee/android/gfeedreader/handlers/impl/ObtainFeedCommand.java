@@ -17,11 +17,16 @@ import ru.georgeee.android.gfeedreader.utility.xml.FeedReaderTask;
  * Created with IntelliJ IDEA.
  * User: georgeee
  * Date: 24.10.13
- * Time: 9:03
+ * Time: 7:34
  * To change this template use File | Settings | File Templates.
  */
-public class UpdateFeedCommand extends SFBaseCommand {
-    Feed feed;
+public class ObtainFeedCommand extends SFBaseCommand{
+    String feedUrl;
+
+    @Override
+    public synchronized void cancel() {
+        super.cancel();
+    }
 
     @Override
     protected void doExecute(Intent intent, Context context, ResultReceiver callback) {
@@ -29,11 +34,15 @@ public class UpdateFeedCommand extends SFBaseCommand {
         FeedTable feedTable = FeedTable.getInstance(context);
         EntryTable entryTable = EntryTable.getInstance(context);
         try{
-            Feed feed = new FeedReaderTask(this.feed.getFeedUrl(), feedTable, entryTable).executeInCurrentThread();
+            Feed feed = feedTable.loadFeed(feedUrl);
+            if(feed == null){
+                feed = new FeedReaderTask(feedUrl, feedTable, entryTable).executeInCurrentThread();
+            }
+            Log.d(getClass().getCanonicalName(), "Feed: "+feed);
             if(feed == null){
                 throw new NullPointerException();
             }
-            Log.d(getClass().getCanonicalName(), "Updated feed: " + feed);
+            bundle.putSerializable("feed", feed);
             notifySuccess(bundle);
         }catch (Exception ex){
             bundle.putSerializable("exceptionClass", ex.getClass());
@@ -49,23 +58,24 @@ public class UpdateFeedCommand extends SFBaseCommand {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeSerializable(feed);
+        dest.writeString(feedUrl);
     }
-    public static final Parcelable.Creator<UpdateFeedCommand> CREATOR = new Parcelable.Creator<UpdateFeedCommand>() {
-        public UpdateFeedCommand createFromParcel(Parcel in) {
-            return new UpdateFeedCommand(in);
+    public static final Parcelable.Creator<ObtainFeedCommand> CREATOR = new Parcelable.Creator<ObtainFeedCommand>() {
+        public ObtainFeedCommand createFromParcel(Parcel in) {
+            return new ObtainFeedCommand(in);
         }
 
-        public UpdateFeedCommand[] newArray(int size) {
-            return new UpdateFeedCommand[size];
+        public ObtainFeedCommand[] newArray(int size) {
+            return new ObtainFeedCommand[size];
         }
     };
 
-    private UpdateFeedCommand(Parcel in) {
-        feed = (Feed) in.readSerializable();
+    private ObtainFeedCommand(Parcel in) {
+        feedUrl = in.readString();
     }
 
-    public UpdateFeedCommand(Feed feed) {
-        this.feed = feed;
+    public ObtainFeedCommand(String feedUrl) {
+        this.feedUrl = feedUrl;
     }
+
 }

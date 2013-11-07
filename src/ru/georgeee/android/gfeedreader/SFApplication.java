@@ -22,6 +22,9 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import ru.georgeee.android.gfeedreader.service.SFCommandExecutorService;
+import ru.georgeee.android.gfeedreader.utility.db.EntryTable;
+import ru.georgeee.android.gfeedreader.utility.db.FeedTable;
+import ru.georgeee.android.gfeedreader.utility.model.Entry;
 
 public class SFApplication extends Application {
 

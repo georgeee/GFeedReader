@@ -1,14 +1,13 @@
 package ru.georgeee.android.gfeedreader.ui;
 
-import android.app.AlarmManager;
 import android.app.Dialog;
-import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,16 +16,17 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
-import ru.georgeee.android.gfeedreader.GAlarmBroadcastReciever;
 import ru.georgeee.android.gfeedreader.R;
 import ru.georgeee.android.gfeedreader.SFBaseActivity;
 import ru.georgeee.android.gfeedreader.handlers.SFBaseCommand;
 import ru.georgeee.android.gfeedreader.handlers.impl.LoadFeedEntriesCommand;
-import ru.georgeee.android.gfeedreader.handlers.impl.LoadFeedMetaCommand;
-import ru.georgeee.android.gfeedreader.utility.Storage;
+import ru.georgeee.android.gfeedreader.handlers.impl.ObtainFeedCommand;
+import ru.georgeee.android.gfeedreader.utility.db.EntryTable;
+import ru.georgeee.android.gfeedreader.utility.db.FeedTable;
 import ru.georgeee.android.gfeedreader.utility.model.Entry;
 import ru.georgeee.android.gfeedreader.utility.model.Feed;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class FeedsActivity extends SFBaseActivity {
@@ -36,7 +36,6 @@ public class FeedsActivity extends SFBaseActivity {
     FeedListAdapter feedListAdapter;
     int requestId = -1;
 
-    AlarmManager alarmManager;
     /**
      * Called when the activity is first created.
      */
@@ -64,7 +63,15 @@ public class FeedsActivity extends SFBaseActivity {
             }
         });
         imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
-        feedListAdapter.addAll(Storage.getInstance().getFeeds());
+        FeedTable feedTable = FeedTable.getInstance(this);
+        EntryTable entryTable = EntryTable.getInstance(this);
+        try {
+            feedListAdapter.addAll(feedTable.loadFeeds());
+        } catch (IOException e) {
+            Log.e(FeedsActivity.class.getCanonicalName(), e.toString());
+        } catch (ClassNotFoundException e) {
+            Log.e(FeedsActivity.class.getCanonicalName(), e.toString());
+        }
         feedListAdapter.notifyDataSetInvalidated();
 
     }
@@ -73,7 +80,7 @@ public class FeedsActivity extends SFBaseActivity {
         String query = searchView.getQuery().toString();
         ProgressDialogFragment progress = new ProgressDialogFragment();
         progress.show(getSupportFragmentManager(), PROGRESS_DIALOG);
-        requestId = getServiceHelper().loadFeedMetaAction(query);
+        requestId = getServiceHelper().obtainFeedAction(query);
     }
 
     @Override
@@ -103,13 +110,13 @@ public class FeedsActivity extends SFBaseActivity {
     public void onServiceCallback(int requestId, Intent requestIntent, int resultCode, Bundle resultData) {
         super.onServiceCallback(requestId, requestIntent, resultCode, resultData);
 
-        if (getServiceHelper().check(requestIntent, LoadFeedMetaCommand.class)) {
-            if (resultCode == LoadFeedMetaCommand.RESPONSE_SUCCESS) {
+        if (getServiceHelper().check(requestIntent, ObtainFeedCommand.class)) {
+            if (resultCode == ObtainFeedCommand.RESPONSE_SUCCESS) {
                 dismissProgressDialog();
                 Feed feed = (Feed) resultData.get("feed");
                 feedListAdapter.add(feed);
                 feedListAdapter.notifyDataSetInvalidated();
-            } else if (resultCode == LoadFeedMetaCommand.RESPONSE_PROGRESS) {
+            } else if (resultCode == ObtainFeedCommand.RESPONSE_PROGRESS) {
                 updateProgressDialog(resultData.getInt(SFBaseCommand.EXTRA_PROGRESS, -1));
             } else {
                 dismissProgressDialog();
@@ -194,7 +201,7 @@ public class FeedsActivity extends SFBaseActivity {
                 public void onClick(View view) {
 //                    ProgressDialogFragment progress = new ProgressDialogFragment();
 //                    progress.show(getSupportFragmentManager(), PROGRESS_DIALOG);
-                    getServiceHelper().loadFeedEntriesAction(feed.getFeedUrl());
+                    getServiceHelper().loadFeedEntriesAction(feed);
                 }
             });
             return rowView;

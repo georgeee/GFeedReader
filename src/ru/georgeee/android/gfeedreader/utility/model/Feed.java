@@ -1,11 +1,6 @@
 package ru.georgeee.android.gfeedreader.utility.model;
 
-import android.os.SystemClock;
-import org.apache.http.impl.cookie.DateUtils;
-import ru.georgeee.android.gfeedreader.utility.xml.FeedReaderTask;
-
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -16,13 +11,22 @@ import java.util.Date;
  * To change this template use File | Settings | File Templates.
  */
 public class Feed implements Serializable{
+    protected long feedId;
     protected WebString title;
+    protected WebString description;
     protected String url;
     protected String iconUrl;
     protected String logoUrl;
-    protected WebString description;
     protected String feedUrl;
     protected Date lastUpdated;
+
+    public long getFeedId() {
+        return feedId;
+    }
+
+    public void setFeedId(long feedId) {
+        this.feedId = feedId;
+    }
 
     public Date getLastUpdated() {
         return lastUpdated;
