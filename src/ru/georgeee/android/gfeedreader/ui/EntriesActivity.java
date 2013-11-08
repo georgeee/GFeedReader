@@ -111,6 +111,8 @@ public class EntriesActivity extends SFBaseActivity {
         feedTitle.setText(feed.getTitle().getText());
         Collections.sort(_entries);
         entries = _entries;
+        entryListAdapter.clear();
+        entryListAdapter.addAll(entries);
         entryListAdapter.notifyDataSetInvalidated();
     }
 
