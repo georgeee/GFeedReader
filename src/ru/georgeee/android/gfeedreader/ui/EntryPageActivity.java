@@ -14,6 +14,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebView;
 import android.widget.*;
 import ru.georgeee.android.gfeedreader.R;
+import ru.georgeee.android.gfeedreader.SFServiceHelper;
 import ru.georgeee.android.gfeedreader.utility.model.Entry;
 import ru.georgeee.android.gfeedreader.utility.model.Feed;
 import ru.georgeee.android.gfeedreader.utility.model.WebString;

@@ -6,8 +6,12 @@
         >
     <LinearLayout
             android:orientation="horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" android:layout_gravity="left|center_vertical">
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" android:layout_gravity="center_vertical|left">
+    </LinearLayout>
+    <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
         <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -15,13 +19,20 @@
                 android:id="@+id/backBtn"/>
         <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
+                android:layout_height="wrap_content"
                 android:text="Feed title"
-                android:id="@+id/feedTitle" android:layout_marginLeft="10dp" android:textSize="22dp"/>
-    </LinearLayout>
+                android:id="@+id/feedTitle" android:textSize="22dp" android:layout_toRightOf="@+id/backBtn"
+                android:layout_alignTop="@+id/backBtn" android:layout_alignBottom="@+id/backBtn"/>
+        <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/updateBtn"
+                android:id="@+id/updateBtn" android:layout_gravity="center_vertical|right"
+                android:layout_alignParentRight="true" android:layout_alignTop="@+id/backBtn"/>
+    </RelativeLayout>
     <ListView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="fill_parent"
             android:id="@+id/entryList" android:layout_gravity="center"/>
 </LinearLayout>
 

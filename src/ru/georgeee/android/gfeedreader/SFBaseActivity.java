@@ -16,11 +16,17 @@
  */
 package ru.georgeee.android.gfeedreader;
 
+import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 
 public abstract class SFBaseActivity extends FragmentActivity implements SFServiceCallbackListener {
+    protected static final String PROGRESS_DIALOG = "progress-dialog";
+    protected int requestId = -1;
 
     private SFServiceHelper serviceHelper;
 
@@ -29,15 +35,77 @@ public abstract class SFBaseActivity extends FragmentActivity implements SFServi
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        serviceHelper = getApp().getServiceHelper();
+    protected Dialog onCreateDialog(int id) {
+        ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Processing");
+        progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                getServiceHelper().cancelCommand(requestId);
+            }
+        });
+
+        return progressDialog;
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         serviceHelper.addListener(this);
+
+        if (requestId != -1 && !getServiceHelper().isPending(requestId)) {
+            dismissProgressDialog();
+        }
+    }
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        serviceHelper = getApp().getServiceHelper();
+    }
+
+
+    public void cancelCommand() {
+        getServiceHelper().cancelCommand(requestId);
+    }
+
+    protected void dismissProgressDialog() {
+        ProgressDialogFragment progress = (ProgressDialogFragment) getSupportFragmentManager().findFragmentByTag(
+                PROGRESS_DIALOG);
+        if (progress != null) {
+            progress.dismiss();
+        }
+    }
+
+    protected void updateProgressDialog(int progress) {
+        ProgressDialogFragment progressDialog = (ProgressDialogFragment) getSupportFragmentManager().findFragmentByTag(
+                PROGRESS_DIALOG);
+        if (progressDialog != null) {
+            progressDialog.setProgress(progress);
+        }
+    }
+
+    public static class ProgressDialogFragment extends DialogFragment {
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            ProgressDialog progressDialog = new ProgressDialog(getActivity());
+            progressDialog.setMessage("Processing...");
+
+            return progressDialog;
+        }
+
+        public void setProgress(int progress) {
+            ((ProgressDialog) getDialog()).setMessage("Processing... " + progress + "%");
+        }
+
+        @Override
+        public void onCancel(DialogInterface dialog) {
+            super.onCancel(dialog);
+            ((SFBaseActivity) getActivity()).cancelCommand();
+        }
+
     }
 
     @Override

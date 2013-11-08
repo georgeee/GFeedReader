@@ -8,14 +8,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.SearchView;
-import android.widget.TextView;
+import android.widget.*;
 import ru.georgeee.android.gfeedreader.R;
 import ru.georgeee.android.gfeedreader.SFBaseActivity;
 import ru.georgeee.android.gfeedreader.handlers.SFBaseCommand;
@@ -30,11 +25,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class FeedsActivity extends SFBaseActivity {
-    private static final String PROGRESS_DIALOG = "progress-dialog";
     SearchView searchView;
     ListView feedList;
     FeedListAdapter feedListAdapter;
-    int requestId = -1;
 
     /**
      * Called when the activity is first created.
@@ -73,7 +66,16 @@ public class FeedsActivity extends SFBaseActivity {
             Log.e(FeedsActivity.class.getCanonicalName(), e.toString());
         }
         feedListAdapter.notifyDataSetInvalidated();
-
+        registerForContextMenu(feedList);
+        feedList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Feed feed = feedListAdapter.getItem(position);
+                ProgressDialogFragment progress = new ProgressDialogFragment();
+                progress.show(getSupportFragmentManager(), PROGRESS_DIALOG);
+                requestId = getServiceHelper().loadFeedEntriesAction(feed);
+            }
+        });
     }
 
     private void processQuery() {
@@ -83,28 +85,6 @@ public class FeedsActivity extends SFBaseActivity {
         requestId = getServiceHelper().obtainFeedAction(query);
     }
 
-    @Override
-    protected Dialog onCreateDialog(int id) {
-        ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Processing");
-        progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialog) {
-                getServiceHelper().cancelCommand(requestId);
-            }
-        });
-
-        return progressDialog;
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        if (requestId != -1 && !getServiceHelper().isPending(requestId)) {
-            dismissProgressDialog();
-        }
-    }
 
     @Override
     public void onServiceCallback(int requestId, Intent requestIntent, int resultCode, Bundle resultData) {
@@ -138,46 +118,31 @@ public class FeedsActivity extends SFBaseActivity {
         }
     }
 
-    public void cancelCommand() {
-        getServiceHelper().cancelCommand(requestId);
-    }
-
-    private void dismissProgressDialog() {
-        ProgressDialogFragment progress = (ProgressDialogFragment) getSupportFragmentManager().findFragmentByTag(
-                PROGRESS_DIALOG);
-        if (progress != null) {
-            progress.dismiss();
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        if (v.getId()==R.id.feedList) {
+            AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
+            menu.setHeaderTitle(feedListAdapter.getItem(info.position).getTitle().getText());
+            menu.add(0, MENU_DELETE_ITEM, 0, getString(R.string.deleteBtn));
         }
     }
 
-    private void updateProgressDialog(int progress) {
-        ProgressDialogFragment progressDialog = (ProgressDialogFragment) getSupportFragmentManager().findFragmentByTag(
-                PROGRESS_DIALOG);
-        if (progressDialog != null) {
-            progressDialog.setProgress(progress);
+    public static final int MENU_DELETE_ITEM = 1;
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        if (item.getItemId() == MENU_DELETE_ITEM) {
+            AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+            Feed feed = feedListAdapter.getItem(info.position);
+            feedListAdapter.notifyDataSetInvalidated();
+            feedListAdapter.remove(feed);
+            EntryTable.getInstance(this).deleteAllFromFeed(feed);
+            FeedTable.getInstance(this).deleteFeed(feed);
+            return true;
         }
-    }
-
-    public static class ProgressDialogFragment extends DialogFragment {
-
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            ProgressDialog progressDialog = new ProgressDialog(getActivity());
-            progressDialog.setMessage("Processing...");
-
-            return progressDialog;
-        }
-
-        public void setProgress(int progress) {
-            ((ProgressDialog) getDialog()).setMessage("Processing... " + progress + "%");
-        }
-
-        @Override
-        public void onCancel(DialogInterface dialog) {
-            super.onCancel(dialog);
-            ((FeedsActivity) getActivity()).cancelCommand();
-        }
-
+        return super.onContextItemSelected(item);
     }
 
     protected class FeedListAdapter extends ArrayAdapter<Feed> {
@@ -196,14 +161,6 @@ public class FeedsActivity extends SFBaseActivity {
             final Feed feed = getItem(position);
             rowTitle.setText(feed.getTitle() == null ? "" : feed.getTitle().getText());
             rowTime.setText(feed.getLastUpdated() == null ? "" : feed.getLastUpdated().toString());
-            rowView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-//                    ProgressDialogFragment progress = new ProgressDialogFragment();
-//                    progress.show(getSupportFragmentManager(), PROGRESS_DIALOG);
-                    getServiceHelper().loadFeedEntriesAction(feed);
-                }
-            });
             return rowView;
         }
     }

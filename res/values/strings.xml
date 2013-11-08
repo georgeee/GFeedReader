@@ -4,4 +4,6 @@
     <string name="searchViewBackText">Rss/atom feed url</string>
     <string name="backBtn">←</string>
     <string name="openFullArticle">Open full article</string>
+    <string name="deleteBtn">Delete</string>
+    <string name="updateBtn">Update</string>
 </resources>

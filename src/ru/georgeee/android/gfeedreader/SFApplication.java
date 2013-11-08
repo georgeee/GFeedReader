@@ -39,7 +39,7 @@ public class SFApplication extends Application {
         AlarmManager alarmManager =  (AlarmManager)getApplicationContext().getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(getApplicationContext(), GAlarmBroadcastReciever.class);
         PendingIntent alarmIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, intent, 0);
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 30 * 1000L, alarmIntent);
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 300 * 1000L, alarmIntent);
     }
 
     public SFServiceHelper getServiceHelper() {
